@@ -66,6 +66,10 @@ class Vote(BaseModel):
     dir: conint(le=1)
 
 
+class VoteDoc(Vote):
+    user_id: int
+
+
 
 class All(BaseModel):
     full_name: str

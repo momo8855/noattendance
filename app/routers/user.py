@@ -2,6 +2,7 @@ from fastapi import status, HTTPException, Depends, APIRouter
 from .. import models, schemas, utils
 from sqlalchemy.orm import Session
 from ..database import get_db
+import pandas as pd
 
 
 router = APIRouter(prefix="/users", tags=['User'])
@@ -12,9 +13,13 @@ def create_student(user: schemas.UserCreate ,db: Session = Depends(get_db)):
     hashed_password = utils.hash(user.password)
     user.password = hashed_password
     new_user = models.User(type = "B", **user.dict())
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    try:
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+    except:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User already exists")
+    
     return new_user
 
 
@@ -23,9 +28,14 @@ def create_doctor(user: schemas.UserCreate ,db: Session = Depends(get_db)):
     hashed_password = utils.hash(user.password)
     user.password = hashed_password
     new_user = models.User(type = "A", **user.dict())
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+
+    try:
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+    except:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User already exists")
+    
     return new_user
 
 
