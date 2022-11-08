@@ -16,8 +16,8 @@ router = APIRouter(prefix="/lectures", tags=['Lectures'])
 def get_lecs(db: Session = Depends(get_db), limit: int = 10, skip: int = 0, search: Optional[str] = ""):
     #posts = db.query(models.Post).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
 
-    lecs = db.query(models.Post, func.count(models.Vote.post_id).label("attend_num")).join(models.Vote, models.Vote.lec_id == models.Post.id, isouter=True).group_by(
-        models.Post.id).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
+    lecs = db.query(models.Post, func.count(models.Vote.lec_id).label("attend_num")).join(models.Vote, models.Vote.lec_id == models.Post.id, isouter=True).group_by(
+        models.Post.id).filter(models.Post.course_name.contains(search)).limit(limit).offset(skip).all()
 
     return lecs
 

@@ -36,7 +36,7 @@ class Resp(PostBase):
 
 class PostOut(BaseModel):
     Post: Resp
-    votes: int
+    attend_num: int
 
 
 class UserCreate(BaseModel):
@@ -62,6 +62,21 @@ class TokenData(BaseModel):
 class Vote(BaseModel):
     lec_id: int
     dir: conint(le=1)
+
+
+
+class All(BaseModel):
+    full_name: str
+    course_name: str
+    lecture_num: str
+
+    class Config:
+        orm_mode = True
+    
+    
+
+
+    
 
 
 

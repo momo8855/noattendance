@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from typing import List
 from typing import Optional
+import pandas as pd
+import json
 
 
 router = APIRouter(prefix='/attend', tags=['Attend'])
@@ -40,3 +42,25 @@ def attend(vote: schemas.Vote, db: Session = Depends(get_db), current_user: int 
         return {"message":"successfully deleted"}
     
 
+
+
+
+#@router.get('/', response_model= schemas.All)
+@router.get('/')
+def get_attendance(db: Session = Depends(get_db), limit: int = 10, skip: int = 0, search: Optional[str] = ""):
+    
+    studs = db.query(models.Post, models.Vote, models.User).join(models.Vote, models.Vote.lec_id == models.Post.id, isouter=True).join(
+        models.User, models.User.id == models.Vote.user_id, isouter=True).filter(models.Post.course_name.contains(search)).limit(limit).offset(skip).all()
+    
+    hquery = db.query(models.User.full_name, models.Post.course_name,models.Post.lecture_num, ).filter(models.Vote.lec_id == models.Post.id).filter(
+        models.Vote.user_id == models.User.id).filter(models.Post.course_name.contains(search)).limit(limit).offset(skip).all()
+
+    
+    df = pd.DataFrame(hquery, columns=['full_name', 'course_name', 'lec_num'])
+    
+    print(df)
+    
+    #studs = db.query(models.Post).join(models.Vote, models.Vote.lec_id == models.Post.id, isouter=True).join(models.Vote.user_id == models.Post.id, isouter=True)
+    #.filter(models.Post.course_name.contains(search)).limit(limit).offset(skip).all()
+    
+    return df
