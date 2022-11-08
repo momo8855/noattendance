@@ -57,10 +57,9 @@ def get_attendance(db: Session = Depends(get_db), limit: int = 10, skip: int = 0
 
     
     df = pd.DataFrame(hquery, columns=['full_name', 'course_name', 'lec_num'])
-    
-    print(df)
+    df = pd.get_dummies(df, columns= ['lec_num'])
     
     #studs = db.query(models.Post).join(models.Vote, models.Vote.lec_id == models.Post.id, isouter=True).join(models.Vote.user_id == models.Post.id, isouter=True)
     #.filter(models.Post.course_name.contains(search)).limit(limit).offset(skip).all()
     
-    return df
+    return df.to_dict(orient='records')
