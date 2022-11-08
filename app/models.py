@@ -6,11 +6,11 @@ from sqlalchemy.orm import relationship
 
 
 class Post(Base):
-    __tablename__ = "posts"
+    __tablename__ = "lectures"
     
     id = Column(Integer, primary_key = True, nullable = False)
-    title = Column(String, nullable = False)
-    content = Column(String, nullable = False)
+    course_name = Column(String, nullable = False)
+    lecture_num = Column(String, nullable = False)
     published = Column(Boolean, nullable = False, server_default = 'TRUE')
     created_at = Column(TIMESTAMP(timezone=True), nullable = False, server_default = text('now()'))
     owner_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
@@ -26,10 +26,12 @@ class User(Base):
     email = Column(String, nullable = False)
     password = Column(String, nullable = False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
+    full_name = Column(String, nullable=False)
+    type = Column(String, nullable=False, server_default= "A")
     
 
 class Vote(Base):
-    __tablename__ = "votes"
+    __tablename__ = "attend"
 
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
-    post_id = Column(Integer, ForeignKey("posts.id", ondelete="CASCADE"), primary_key=True)
+    lec_id = Column(Integer, ForeignKey("lectures.id", ondelete="CASCADE"), primary_key=True)

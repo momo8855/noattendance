@@ -5,8 +5,8 @@ from pydantic.types import conint
 
 
 class PostBase(BaseModel):
-    title: str
-    content: str
+    course_name: str
+    lecture_num: str
     published: bool = True
 
 
@@ -42,6 +42,7 @@ class PostOut(BaseModel):
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
+    full_name: str
 
 
 class UserLogin(BaseModel):
@@ -59,7 +60,7 @@ class TokenData(BaseModel):
 
 
 class Vote(BaseModel):
-    post_id: int
+    lec_id: int
     dir: conint(le=1)
 
 

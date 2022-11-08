@@ -8,61 +8,61 @@ from sqlalchemy import func
 
 
 
-router = APIRouter(prefix="/posts", tags=['Post'])
+router = APIRouter(prefix="/lectures", tags=['Lectures'])
 
 
 
 @router.get("/", response_model=List[schemas.PostOut])
-def get_posts(db: Session = Depends(get_db), limit: int = 10, skip: int = 0, search: Optional[str] = ""):
+def get_lecs(db: Session = Depends(get_db), limit: int = 10, skip: int = 0, search: Optional[str] = ""):
     #posts = db.query(models.Post).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
 
-    posts = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(
+    lecs = db.query(models.Post, func.count(models.Vote.post_id).label("attend_num")).join(models.Vote, models.Vote.lec_id == models.Post.id, isouter=True).group_by(
         models.Post.id).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
 
-    return posts
+    return lecs
 
 
 
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model= schemas.Resp)
-def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
-    new_post = models.Post(owner_id = current_user.id, **post.dict())
+def create_lecs(lecture: schemas.PostCreate, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
+    new_lec = models.Post(owner_id = current_user.id, **lecture.dict())
 
-    db.add(new_post)
+    db.add(new_lec)
     db.commit()
-    db.refresh(new_post)
+    db.refresh(new_lec)
 
-    return new_post
+    return new_lec
 
 
 
 @router.get("/{id}", response_model=schemas.PostOut)
-def get_post(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
+def get_lec(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     #post = db.query(models.Post).filter(models.Post.id == id).first()
 
-    post = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(
+    lec = db.query(models.Post, func.count(models.Vote.lec_id).label("votes")).join(models.Vote, models.Vote.lec_id == models.Post.id, isouter=True).group_by(
         models.Post.id).filter(models.Post.id == id).first()
 
-    if not post:
+    if not lec:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"post with id {id} was not found")
-    return post
+    return lec
 
    
     
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
+def delete_lec(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
   
-    post_query = db.query(models.Post).filter(models.Post.id == id)
-    post = post_query.first()
+    lec_query = db.query(models.Post).filter(models.Post.id == id)
+    lec = lec_query.first()
 
-    if post == None:
+    if lec == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"post with id: {id} does not exist")
 
-    if post.owner_id != current_user.id:
+    if lec.owner_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to perform requested action")
 
-    post_query.delete()
+    lec_query.delete()
     db.commit()
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -70,19 +70,19 @@ def delete_post(id: int, db: Session = Depends(get_db), current_user: int = Depe
 
 
 @router.put("/{id}", response_model=schemas.Resp)
-def update_post(id: int, updated_post: schemas.PostCreate, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
-    post_query = db.query(models.Post).filter(models.Post.id == id)
-    post = post_query.first()
+def update_lec(id: int, updated_post: schemas.PostCreate, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
+    lec_query = db.query(models.Post).filter(models.Post.id == id)
+    lec = lec_query.first()
 
-    if post == None:
+    if lec == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"post with id {id} does not exist")
 
-    if post.owner_id != current_user.id:
+    if lec.owner_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to perform requested action")
 
-    post_query.update(updated_post.dict(), synchronize_session=False)
+    lec_query.update(updated_post.dict(), synchronize_session=False)
     db.commit()
 
-    return  post_query.first()
+    return  lec_query.first()
 
 
