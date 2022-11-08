@@ -27,7 +27,7 @@ class User(Base):
     password = Column(String, nullable = False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
     full_name = Column(String, nullable=False)
-    type = Column(String, nullable=False, server_default= "A")
+    type = Column(String, nullable=False)
     
 
 class Vote(Base):

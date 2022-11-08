@@ -27,8 +27,13 @@ def get_lecs(db: Session = Depends(get_db), limit: int = 10, skip: int = 0, sear
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model= schemas.Resp)
 def create_lecs(lecture: schemas.PostCreate, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
-    new_lec = models.Post(owner_id = current_user.id, **lecture.dict())
 
+    print(current_user.type)
+    
+    if current_user.type != "B":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="only doctors can perform this action")
+
+    new_lec = models.Post(owner_id = current_user.id, **lecture.dict())
     db.add(new_lec)
     db.commit()
     db.refresh(new_lec)

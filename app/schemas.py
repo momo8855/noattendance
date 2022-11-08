@@ -43,6 +43,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     full_name: str
+    
 
 
 class UserLogin(BaseModel):
@@ -57,6 +58,7 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     id: Optional[str] = None
+    type: Optional[str] = None
 
 
 class Vote(BaseModel):
