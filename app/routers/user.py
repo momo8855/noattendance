@@ -12,7 +12,7 @@ router = APIRouter(prefix="/users", tags=['User'])
 def create_student(user: schemas.UserCreate ,db: Session = Depends(get_db)):
     hashed_password = utils.hash(user.password)
     user.password = hashed_password
-    new_user = models.User(type = "B", **user.dict())
+    new_user = models.User(type = "A", **user.dict())
     try:
         db.add(new_user)
         db.commit()
@@ -27,7 +27,7 @@ def create_student(user: schemas.UserCreate ,db: Session = Depends(get_db)):
 def create_doctor(user: schemas.UserCreate ,db: Session = Depends(get_db)):
     hashed_password = utils.hash(user.password)
     user.password = hashed_password
-    new_user = models.User(type = "A", **user.dict())
+    new_user = models.User(type = "B", **user.dict())
 
     try:
         db.add(new_user)
