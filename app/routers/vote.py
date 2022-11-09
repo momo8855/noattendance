@@ -52,17 +52,20 @@ def get_attendance(db: Session = Depends(get_db), limit: int = 10, skip: int = 0
     studs = db.query(models.Post, models.Vote, models.User).join(models.Vote, models.Vote.lec_id == models.Post.id, isouter=True).join(
         models.User, models.User.id == models.Vote.user_id, isouter=True).filter(models.Post.course_name.contains(search)).limit(limit).offset(skip).all()
     
-    hquery = db.query(models.User.full_name, models.Post.course_name,models.Post.lecture_num, ).filter(models.Vote.lec_id == models.Post.id).filter(
+    hquery = db.query(models.User.full_name, models.User.id, models.Post.course_name,models.Post.lecture_num, ).filter(models.Vote.lec_id == models.Post.id).filter(
         models.Vote.user_id == models.User.id).filter(models.Post.course_name.contains(search)).limit(limit).offset(skip).all()
 
     
-    df = pd.DataFrame(hquery, columns=['full_name', 'course_name', 'lec_num'])
-    df = pd.get_dummies(df, columns= ['lec_num'])
+    df_1 = pd.DataFrame(hquery, columns=['full_name','stud_id' ,'course_name', 'lec_num'])
+    df_2= pd.get_dummies(df_1, columns= ['lec_num'])
+    df_3 =df_2.groupby(['stud_id', 'full_name', 'course_name']).sum().reset_index()
 
+    print(df_3)
     #studs = db.query(models.Post).join(models.Vote, models.Vote.lec_id == models.Post.id, isouter=True).join(models.Vote.user_id == models.Post.id, isouter=True)
     #.filter(models.Post.course_name.contains(search)).limit(limit).offset(skip).all()
     
-    return df.to_dict(orient='records')
+    
+    return df_3.to_dict(orient='records')
 
 
 
