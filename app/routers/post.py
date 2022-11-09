@@ -12,7 +12,7 @@ router = APIRouter(prefix="/lectures", tags=['Lectures'])
 
 
 
-@router.get("/", response_model=List[schemas.PostOut])
+@router.get("/", response_model=List[schemas.PostOut], include_in_schema=False)
 def get_lecs(db: Session = Depends(get_db), limit: int = 10, skip: int = 0, search: Optional[str] = ""):
     #posts = db.query(models.Post).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
 
@@ -42,7 +42,7 @@ def create_lecs(lecture: schemas.PostCreate, db: Session = Depends(get_db), curr
 
 
 
-@router.get("/{id}", response_model=schemas.PostOut)
+@router.get("/{id}", response_model=schemas.PostOut, include_in_schema=False)
 def get_lec(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     #post = db.query(models.Post).filter(models.Post.id == id).first()
 
@@ -55,7 +55,7 @@ def get_lec(id: int, db: Session = Depends(get_db), current_user: int = Depends(
 
    
     
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT, include_in_schema=False)
 def delete_lec(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
   
     lec_query = db.query(models.Post).filter(models.Post.id == id)
@@ -74,7 +74,7 @@ def delete_lec(id: int, db: Session = Depends(get_db), current_user: int = Depen
 
 
 
-@router.put("/{id}", response_model=schemas.Resp)
+@router.put("/{id}", response_model=schemas.Resp, include_in_schema=False)
 def update_lec(id: int, updated_post: schemas.PostCreate, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     lec_query = db.query(models.Post).filter(models.Post.id == id)
     lec = lec_query.first()
